@@ -7,6 +7,18 @@ class User
         @pick = ''
     end
 
+    #update data from a hash
+    #@id can't be updated though
+    def update(data)
+        puts "updating with #{data}"
+        @name = data[:name] unless data[:name].nil?
+        @nickname = data[:nickname] unless data[:nickname].nil?
+        @pick = data[:pick] unless data[:pick].nil?
+        unless data[:status].nil?
+            self.status=(data[:status])
+        end
+    end
+
     attr_reader :status
 
     def status=(new_status)
