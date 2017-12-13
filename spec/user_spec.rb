@@ -18,11 +18,10 @@ RSpec.describe User do
         end
 
         it "should allow data to be set from a hash" do
-            @user.update({name: "foo", nickname: "bar", pick: "baz", status: :voting})
+            @user.update({name: "foo", nickname: "bar", pick: "baz"})
             expect(@user.name).to eq "foo"
             expect(@user.nickname).to eq "bar"
             expect(@user.pick).to eq "baz"
-            expect(@user.status).to eq :voting
         end
     
         it "should ignore invalid hash keys" do

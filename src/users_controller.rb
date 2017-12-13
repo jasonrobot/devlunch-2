@@ -15,7 +15,7 @@ class UsersController
         app_state = AppState.load
 
         case app_state
-        when :waiting
+        when :waiting, :results_final
             #no transitions allowed!
         when :voting
             #all transitions allowed!
@@ -27,17 +27,28 @@ class UsersController
             else
                 #return error
             end
-        when :results_final
-            #no transitions allowed!
         end
 
         #user.save
         user
     end
 
-    def self.edit (user, options)
+    def self.update (user, options)
         app_state = AppState.load
-        #should check the formatting of options here
+        #should check the formatting of options here, keys need to be symbols
+
         case app_state
+        when :waiting, :voting
+            #all changes allowed
+            user.update options
+        when :results_pending
+            puts "in pending!"
+            #only pick can be changed
+            options.select! {|k, _| k == :pick}
+            puts "updating with #{options}"
+            user.update options
+        when :results_final
+            #no changes allowed!
+        end
     end
 end

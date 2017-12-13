@@ -25,7 +25,6 @@ RSpec.describe UsersController do
         end
         
         it "should allow all status changes" do
-            puts "im state #{AppState.load}"
             UsersController.signup @user, :joining
             expect(@user.status).to eq(:joining)
             UsersController.signup @user, :voting
@@ -62,10 +61,15 @@ RSpec.describe UsersController do
         end
 
         it "should allow pick to be changed" do
-
+            UsersController.update @user, ({pick: "food"})
+            expect(@user.pick).to eq "food"
         end
 
         it "should not allow user data change" do
+            puts "#{AppState.load}"
+            UsersController.update @user, ({name: "foo", nickname: "bar"})
+            expect(@user.name).not_to eq "foo"
+            expect(@user.name).not_to eq "bar"
         end
     end
 
