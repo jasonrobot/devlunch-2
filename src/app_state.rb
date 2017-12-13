@@ -5,7 +5,7 @@ class AppState
         @@state
     end
 
-    def self.set (new_state)
+    def self.state=(new_state)
         @@state = new_state
     end
 end

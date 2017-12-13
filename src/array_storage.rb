@@ -3,7 +3,7 @@ class ArrayStorage
 
     @@next_id = 0
 
-    def self.get_next_user_id
+    def self.next_user_id
         id = @@next_id
         @@next_id = id + 1
         return id

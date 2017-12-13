@@ -11,7 +11,7 @@ class UsersController
     end
     
     def self.signup (user, operation)
-        operation = operation.to_sym        
+        #operation = operation.to_sym        
         app_state = AppState.load
 
         case app_state
@@ -19,10 +19,10 @@ class UsersController
             #no transitions allowed!
         when :voting
             #all transitions allowed!
-        user.status = operation
+            user.status = operation
         when :results_pending
             #:out <-> :joining only!
-            if !user.voting && (operation == :out || operation == :joining)
+            if (user.status != :voting) && (operation == :out || operation == :joining)
                 user.status = operation
             else
                 #return error

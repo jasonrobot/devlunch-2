@@ -1,7 +1,6 @@
 require './src/user.rb'
-require './src/app_state.rb'
 
-RSpec.describe User, "foo" do
+RSpec.describe User do
     context "in isolation" do
         it "should default status to OUT" do
             user = User.new 1, "test"
@@ -11,7 +10,7 @@ RSpec.describe User, "foo" do
         it "should not allow invalid statuses" do
             user = User.new 1, "test"
             user.status = :foobar
-            expect(user.status).not_to eq :foobar
+            expect(user.status).not_to eq 4
         end
     end
 end
