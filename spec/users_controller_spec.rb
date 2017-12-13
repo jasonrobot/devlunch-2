@@ -59,7 +59,6 @@ RSpec.describe UsersController do
             @user.status = :out
             UsersController.signup @user, :voting
             expect(@user.status).to eq(:out)
-            
         end
 
         it "should allow pick to be changed" do

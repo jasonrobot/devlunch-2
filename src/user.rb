@@ -1,4 +1,4 @@
-class User    
+class User 
     def initialize (id, name)
         @id = id
         @status = :out
@@ -11,7 +11,6 @@ class User
 
     def status=(new_status)
         if [:out, :voting, :joining].include? new_status
-            puts "setting status #{new_status}"
             @status = new_status
         else
             puts "invalid status #{new_status}"

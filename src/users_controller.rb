@@ -34,4 +34,8 @@ class UsersController
         #user.save
         user
     end
+
+    def self.edit (user, options)
+        
+    end
 end
