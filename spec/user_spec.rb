@@ -30,9 +30,9 @@ RSpec.describe User do
             #what expectations should be set here? Maybe that there's no change?
         end
 
-        it "should not allow invalid statuses" do
+        it "should not allow status changes" do
             @user.status = :out
-            @user.update({status: :foobar})
+            @user.update({status: :joining})
             expect(@user.status).to eq :out
         end
     end

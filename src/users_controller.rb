@@ -36,6 +36,8 @@ class UsersController
     end
 
     def self.edit (user, options)
-        
+        app_state = AppState.load
+        #should check the formatting of options here
+        case app_state
     end
 end
