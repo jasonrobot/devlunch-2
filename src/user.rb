@@ -1,9 +1,13 @@
 class User
-  def initialize(id, name)
+  def initialize(name, id = nil, status = :out, nickname = '', pick = '')
     @id = id
-    @status = :out
+    @status = status
     @name = name
-    @nickname = name
+    if nickname == ''
+      @nickname = name
+    else
+      @nickname = nickname
+    end
     @pick = ''
   end
 

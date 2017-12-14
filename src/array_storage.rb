@@ -15,7 +15,14 @@ class ArrayStorage
   end
 
   def store_user(user)
-    @users[user.id] = user if (user.is_a? User) && !user.id.nil?
+    #@users[user.id] = user if (user.is_a? User) && !user.id.nil?
+    if user.is_a? User
+      if user.id.nil?
+        user.id = self.next_user_id
+      end
+      @users[user.id] = user
+      return user.id
+    end
   end
 
   def load_user(id)

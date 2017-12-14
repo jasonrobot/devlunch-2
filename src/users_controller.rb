@@ -1,14 +1,4 @@
 class UsersController
-  @@data_store
-
-  def self.data_store=(ds)
-    @@data_store = ds
-  end
-
-  def self.new_user(name)
-    User.new @@data_store.next_user_id, name
-  end
-
   def self.signup(user, operation)
     # operation = operation.to_sym
     app_state = AppState.load
@@ -28,7 +18,6 @@ class UsersController
       end
     end
 
-    # user.save
     user
   end
 

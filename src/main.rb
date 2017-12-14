@@ -2,6 +2,8 @@
 require 'sinatra'
 require 'json'
 
+storage = ArrayStorage.new
+
 get '/' do
   'Hello world!'
 end
@@ -9,6 +11,14 @@ end
 def post_login; end
 
 post '/login' do
+end
+
+def create_account (params)
+  
+end
+
+post '/createAccount' do
+  create_account params
 end
 
 get '/signup/*' do |operation|
