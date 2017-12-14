@@ -1,22 +1,28 @@
+require_relative './user.rb'
+
 class ArrayStorage
-    @@users = Hash.new
+  @users = {}
 
-    @@next_id = 0
+  def initialize
+    @next_id = 0
+    @users = {}
+  end
 
-    def self.next_user_id
-        id = @@next_id
-        @@next_id = id + 1
-        return id
-    end
+  def next_user_id
+    id = @next_id
+    @next_id = id + 1
+    id
+  end
 
-    def self.store_user (user)
-        @@users[user.id] = user
-    end
+  def store_user(user)
+    @users[user.id] = user if (user.is_a? User) && !user.id.nil?
+  end
 
-    def self.load_user (id)
-    end
+  def load_user(id)
+    @users[id]
+  end
 
-    def self.load_all_users
-        return @@users
-    end
+  def load_all_users
+    @users
+  end
 end
