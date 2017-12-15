@@ -8,6 +8,15 @@ class User
     @pick = pick
   end
 
+  def self.from_json(id, json)
+    json = JSON.parse json
+    new(json['name'],
+        id,
+        json['status'].to_sym,
+        json['nickname'],
+        json['pick'])
+  end
+
   # update data from a hash
   # @id can't be updated though
   def update(data)
