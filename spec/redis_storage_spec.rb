@@ -45,7 +45,6 @@ RSpec.describe RedisStorage do
       state.value = :voting
       @store.store state
       loaded_state = @store.load :app_state
-      puts loaded_state.to_s
       expect(loaded_state.value).to eq state.value
     end
 
