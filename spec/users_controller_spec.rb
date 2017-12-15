@@ -4,14 +4,13 @@ require './src/users_controller.rb'
 
 RSpec.describe UsersController do
   before :example do
-    @state = AppState.new
-    @users_controller = UsersController.new @state
+    @users_controller = UsersController.new :waiting
     @user = User.new 1, 'test'
   end
 
   context 'during waiting' do
     before :example do
-      @state.set :waiting
+      @users_controller.state = :waiting
     end
 
     it 'should not allow any status changes' do
@@ -24,7 +23,7 @@ RSpec.describe UsersController do
 
   context 'during voting' do
     before :example do
-      @state.set :voting
+      @users_controller.state = :voting
     end
 
     it 'should allow all status changes' do
@@ -40,7 +39,7 @@ RSpec.describe UsersController do
 
   context 'during results pending' do
     before :example do
-      @state.set :results_pending
+      @users_controller.state = :results_pending
     end
 
     it 'should allow status change between both OUT and JOINING' do
@@ -67,7 +66,6 @@ RSpec.describe UsersController do
     end
 
     it 'should not allow user data change' do
-      puts @state.load.to_s
       @users_controller.update @user, name: 'foo', nickname: 'bar'
       expect(@user.name).not_to eq 'foo'
       expect(@user.name).not_to eq 'bar'
@@ -76,7 +74,7 @@ RSpec.describe UsersController do
 
   context 'during results final' do
     before :example do
-      @state.set :results_final
+      @users_controller.state = :results_final
     end
 
     it 'should not allow any state changes' do

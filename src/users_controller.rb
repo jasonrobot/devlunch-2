@@ -1,11 +1,13 @@
 class UsersController
-  def initialize(storage)
-    @storage = storage
+  def initialize(state)
+    @state = state
   end
+
+  attr_accessor :state
 
   def signup(user, operation)
     # operation = operation.to_sym
-    case @storage.load
+    case @state
     when :waiting, :results_final
     # no transitions allowed!
     when :voting
@@ -25,8 +27,7 @@ class UsersController
 
   def update(user, options)
     # should check the formatting of options here, keys need to be symbols
-
-    case @storage.load
+    case @state
     when :waiting, :voting
       # all changes allowed
       user.update options

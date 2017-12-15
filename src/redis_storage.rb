@@ -5,9 +5,14 @@ require './src/app_state.rb'
 # Storage backend using redis
 class RedisStorage
   def initialize
-    @next_user_id = 1
     # make a connection
     @redis = Redis.new # (host: 'localhost', port: 6379, db: 0)
+    @next_user_id = @redis.get('next-user-id').to_i
+    puts "got next user #{@next_user_id}"
+    if @next_user_id.nil?
+      @redis.set 'next-user-id', 1
+      @next_user_id = 1
+    end
   end
 
   def next_id(type)
@@ -15,6 +20,8 @@ class RedisStorage
     when :user
       id = @next_user_id
       @next_user_id = id + 1
+      puts "storing next user id #{@next_user_id}"
+      @redis.set 'next-user-id', @next_user_id
       id
     end
   end
@@ -24,7 +31,9 @@ class RedisStorage
     # TODO: return success or failure
     # @users[user.id] = user if (user.is_a? User) && !user.id.nil?
     if object.is_a? User
-      object.id = @next_user_id if object.id.nil?
+      puts "storing a user #{object.name}"
+      object.id = next_id(:user) if object.id.nil?
+      puts "will be id #{object.id}"
       @redis.set "user:#{object.id}", object.to_json
       object.id
     elsif object.is_a? AppState
@@ -50,7 +59,8 @@ class RedisStorage
   def load_all(type)
     case type
     when :user
-      @redis.scan 0, @match => 'user:*'
+      # return from index 1 so as to not include the cursor
+      @redis.scan(0, @match => 'user:*')[1]
     end
   end
 
