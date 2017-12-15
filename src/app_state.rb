@@ -1,12 +1,16 @@
 # this represents the state of the app
+# TODO probably should just use an attr_accessor and name the field 'value'
 class AppState
-  @state = :waiting
+  @value = :waiting
+  VALID_STATES = %i[waiting voting results_pending results_final].freeze
 
-  def set(new_state)
-    @state = new_state
+  def initialize
+    @state = :waiting
   end
 
-  def load
-    @state
+  attr_reader :value
+
+  def value=(new_state)
+    @value = new_state if VALID_STATES.include? new_state
   end
 end

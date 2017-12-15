@@ -19,6 +19,7 @@ class User
 
   # update data from a hash
   # @id can't be updated though
+  # @status needs to be updated on its own
   def update(data)
     @name = data[:name] unless data[:name].nil?
     @nickname = data[:nickname] unless data[:nickname].nil?

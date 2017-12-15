@@ -7,7 +7,7 @@ RSpec.describe RedisStorage do
     @store = RedisStorage.new
   end
 
-  context 'in isolation' do
+  context 'with users' do
     it 'should store and load a user' do
       user_id = 4
       user = User.new 'tester', 4
@@ -35,7 +35,21 @@ RSpec.describe RedisStorage do
       fu = FakeUser.new
       @store.store fu
       # expect(@store.load_all(:user).length).to eq 0
-      expect(@store.load(:user, fu.id)).to eq nil
+      expect(@store.load(:user, fu.id).nil?).to eq true
+    end
+  end
+
+  context 'with AppState' do
+    it 'should store and load app state' do
+      state = AppState.new
+      state.value = :voting
+      @store.store state
+      loaded_state = @store.load :app_state
+      puts loaded_state.to_s
+      expect(loaded_state.value).to eq state.value
+    end
+
+    it 'should only ever store one' do
     end
   end
 end
