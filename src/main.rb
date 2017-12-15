@@ -1,8 +1,9 @@
 # myapp.rb
 require 'sinatra'
 require 'json'
+require './src/array_storage.rb'
 
-storage = ArrayStorage.new
+@storage = ArrayStorage.new
 
 get '/' do
   'Hello world!'
@@ -13,10 +14,10 @@ def post_login; end
 post '/login' do
 end
 
-def create_account (params)
+def create_account(params)
   name = params['name']
   user = User.new name
-  storage.store_user user
+  @storage.store_user user
 end
 
 post '/createAccount' do

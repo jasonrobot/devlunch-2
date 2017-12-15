@@ -1,11 +1,12 @@
+# this represents the state of the app
 class AppState
-  @@state = :waiting
+  @state = :waiting
 
-  def self.load
-    @@state
+  def set(new_state)
+    @state = new_state
   end
 
-  def self.state=(new_state)
-    @@state = new_state
+  def load
+    @state
   end
 end

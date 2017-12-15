@@ -1,33 +1,46 @@
 require_relative './user.rb'
 
+# A storage backend that just keeps things in an array in memory. Good for testing.
 class ArrayStorage
   @users = {}
 
   def initialize
-    @next_id = 0
+    @next_user_id = 1
     @users = {}
   end
 
-  def next_user_id
-    id = @next_id
-    @next_id = id + 1
-    id
+  def next_id(type)
+    case type
+    when :user
+      id = @next_user_id
+      @next_user_id = id + 1
+      id
+    end
   end
 
-  def store_user(user)
-    #@users[user.id] = user if (user.is_a? User) && !user.id.nil?
-    return unless user.is_a? User
-    return if user.id.nil?
-    user.id = next_user_id
-    @users[user.id] = user
-    user.id
+  def store(object)
+    # @users[user.id] = user if (user.is_a? User) && !user.id.nil?
+    # return unless user.is_a? User
+    if object.is_a? User
+      object.id = @next_user_id if object.id.nil?
+      @users[object.id] = object
+      object.id
+    end
   end
 
-  def load_user(id)
-    @users[id]
+  def load(type, id)
+    result = nil
+    case type
+    when :user
+      result = @users[id]
+    end
+    result
   end
 
-  def load_all_users
-    @users
+  def load_all(type)
+    case type
+    when :user
+      @users
+    end
   end
 end

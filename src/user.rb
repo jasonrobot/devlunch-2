@@ -26,6 +26,13 @@ class User
     end
   end
 
+  def to_json
+    { 'name' => @name,
+      'status' => @status,
+      'nickname' => @nickname,
+      'pick' => @pick }.to_json
+  end
+
   attr_accessor :id
   attr_accessor :name
   attr_accessor :nickname
