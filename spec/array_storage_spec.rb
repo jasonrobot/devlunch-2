@@ -32,7 +32,6 @@ RSpec.describe ArrayStorage do
     @store.store_user FakeUser.new
     expect(@store.load_all_users.length).to eq 0
   end
-
 end
 
 class FakeUser

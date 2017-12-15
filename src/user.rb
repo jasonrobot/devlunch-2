@@ -1,14 +1,11 @@
+# User object
 class User
   def initialize(name, id = nil, status = :out, nickname = '', pick = '')
     @id = id
     @status = status
     @name = name
-    if nickname == ''
-      @nickname = name
-    else
-      @nickname = nickname
-    end
-    @pick = ''
+    @nickname = (nickname == '' ? name : nickname)
+    @pick = pick
   end
 
   # update data from a hash

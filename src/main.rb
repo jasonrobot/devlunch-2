@@ -14,7 +14,9 @@ post '/login' do
 end
 
 def create_account (params)
-  
+  name = params['name']
+  user = User.new name
+  storage.store_user user
 end
 
 post '/createAccount' do
