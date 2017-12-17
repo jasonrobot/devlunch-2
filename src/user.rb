@@ -12,6 +12,10 @@ class User
     from_json storage.load :user, id
   end
 
+  def self.load_all(storage)
+    from_json_array storage.load_all :user
+  end
+
   # TODO: I want both these json parsing methods to work the same
   # FIXME: make private
   def self.from_json(json)

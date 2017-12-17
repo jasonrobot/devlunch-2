@@ -38,6 +38,14 @@ RSpec.describe RedisStorage do
       # expect(@store.load_all(:user).length).to eq 0
       expect(@store.load(:user, fu.id).nil?).to eq true
     end
+
+    describe 'load all' do
+      it 'should return something parsable into an array of hashes' do
+        parsed = JSON.parse(@store.load_all(:user))
+        expect(parsed.class).to eq Array
+        expect(parsed[0].class).to eq Hash
+      end
+    end
   end
 
   context 'with AppState' do

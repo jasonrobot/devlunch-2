@@ -47,11 +47,12 @@ class RedisStorage
     end
   end
 
+  # this needs to return an array of objects, not an array of strings
   def load_all(type)
     case type
     when :user
-      # return from index 1 so as to not include the cursor
-      @redis.scan(0, @match => 'user:*')[1]
+      # use index 1 so as to not include the cursor
+      @redis.scan(0, @match => 'user:*')[1].map { |k| JSON.parse(@redis.get(k)) }.to_json
     end
   end
 

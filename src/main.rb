@@ -14,7 +14,7 @@ post '/login' do
   uname = params['uname']
   # need to load user by name
   storage = RedisStorage.new
-  user = storage.load(:user, uname)
+  user = User.load storage, uname
   session = Session.new user.id
   storage.store session
   session.id
@@ -30,28 +30,31 @@ post '/createAccount' do
   user.id
 end
 
-get '/signup/*' do |operation|
+post '/signup' do
   return if params['user_id'].nil?
-  return unless %s(out joining voting).include? operation
+  operation = params['operation']
+  return unless %w[out joining voting].include? operation
 
   store = RedisStorage.new
   user_id = params['user_id']
-  user = store.load :user, user_id
-  users_controller = UsersController.new(store.load(:app_state).value)
-  user = users_controller.signup(user, operation.to_sym)
+  user = User.load store, user_id
+  state = AppState.load store
+  UsersController.new(user, state).signup operation.to_sym
   store.store user
   # return 200 ok?
 end
 
 get '/users' do
   store = RedisStorage.new
-  store.load_all(:user).to_json
+  # this is ok here, because we don't need them parsed
+  store.load_all(:user)
 end
 
+# FIXME: Move the logic out of this handler to somewhere that its testable
 get '/users/*' do |option|
   return unless %w[voting joining].include?(option)
 
   store = RedisStorage.new
-  users = store.load_all :user
-  users.select { |u| u.status == option.to_sym }
+  users = User.load_all store
+  users.select { |u| u.status == option.to_sym }.to_json
 end
