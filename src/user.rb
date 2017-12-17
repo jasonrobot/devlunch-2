@@ -8,13 +8,25 @@ class User
     @pick = pick
   end
 
-  def self.from_json(id, json)
+  # TODO: I want both these json parsing methods to work the same
+  def self.from_json(json)
     json = JSON.parse json
     new(json['name'],
-        id,
+        json['id'],
         json['status'].to_sym,
         json['nickname'],
         json['pick'])
+  end
+
+  def self.from_json_array(json)
+    json = JSON.parse json
+    json.map do |user_json|
+      new(user_json['name'],
+          user_json['id'],
+          user_json['status'].to_sym,
+          user_json['nickname'],
+          user_json['pick'])
+    end
   end
 
   # update data from a hash
@@ -36,11 +48,12 @@ class User
     end
   end
 
-  def to_json
-    { 'name' => @name,
-      'status' => @status,
+  def to_json(options = {})
+    { 'name'     => @name,
+      'id'       => @id,
+      'status'   => @status,
       'nickname' => @nickname,
-      'pick' => @pick }.to_json
+      'pick'     => @pick }.to_json
   end
 
   attr_accessor :id

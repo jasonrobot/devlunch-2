@@ -4,8 +4,9 @@ class AppState
   @value = :waiting
   VALID_STATES = %i[waiting voting results_pending results_final].freeze
 
-  def initialize
-    @state = :waiting
+  # If you're loading something from the DB, you'll probably need to use .to_sym on it
+  def initialize(value = :waiting)
+    @value = value
   end
 
   attr_reader :value

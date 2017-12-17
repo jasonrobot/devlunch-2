@@ -1,20 +1,22 @@
 require './src/user.rb'
 
 RSpec.describe User do
-  it 'should default status to :out' do
-    @user = User.new 1, 'test'
-    expect(@user.status).to eq :out
-  end
+  context 'in isolation' do
+    it 'should default status to :out' do
+      @user = User.new 'test', 1
+      expect(@user.status).to eq :out
+    end
 
-  it 'should not allow invalid statuses' do
-    @user = User.new 1, 'test'
-    @user.status = :foobar
-    expect(@user.status).not_to eq 4
+    it 'should not allow invalid statuses' do
+      @user = User.new 'test', 1
+      @user.status = :foobar
+      expect(@user.status).not_to eq 4
+    end
   end
 
   describe 'update' do
     before :example do
-      @user = User.new 1, 'test'
+      @user = User.new 'test', 1
     end
 
     it 'should allow data to be set from a hash' do
@@ -33,6 +35,30 @@ RSpec.describe User do
       @user.status = :out
       @user.update(status: :joining)
       expect(@user.status).to eq :out
+    end
+  end
+
+  context 'being loaded' do
+    before :example do
+      @user = User.new 'test', 1, :voting, 't', 'food';
+    end
+
+    it 'should load from json' do
+      result = User.from_json @user.to_json
+      expect(result.name).to eq @user.name
+      expect(result.id).to eq @user.id
+      expect(result.status).to eq @user.status
+      expect(result.nickname).to eq @user.nickname
+      expect(result.pick).to eq @user.pick
+    end
+
+    it 'should load multiple from json' do
+      user1 = User.new 'foo', 3
+      user2 = User.new 'bar', 5
+      result = User.from_json_array([user1, user2].to_json)
+      expect(result.length).to eq 2
+      expect(result[0].name).to eq 'foo'
+      expect(result[1].name).to eq 'bar'
     end
   end
 end
