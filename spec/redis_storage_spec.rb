@@ -12,7 +12,8 @@ RSpec.describe RedisStorage do
       user_id = 4
       user = User.new 'tester', user_id
       @store.store user
-      user_loaded = User.from_json @store.load(:user, user_id)
+      # user_loaded = User.from_json @store.load(:user, user_id)
+      user_loaded = User.load @store, user_id
       expect(user_loaded.name).to eq 'tester'
     end
 
@@ -26,7 +27,8 @@ RSpec.describe RedisStorage do
       user = User.new 'foobar'
       new_id = @store.store user
       # expect(@store.load_all(:user).length).to eq 1
-      user_loaded = User.from_json @store.load(:user, new_id)
+      # user_loaded = User.from_json @store.load(:user, new_id)
+      user_loaded = User.load @store, new_id
       expect(user_loaded.name).to eq 'foobar'
     end
 
@@ -43,7 +45,8 @@ RSpec.describe RedisStorage do
       state = AppState.new
       state.value = :voting
       @store.store state
-      loaded_state = AppState.new((@store.load :app_state).to_sym)
+      # loaded_state = AppState.new((@store.load :app_state).to_sym)
+      loaded_state = AppState.load @store
       expect(loaded_state.value).to eq state.value
     end
 

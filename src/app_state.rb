@@ -9,6 +9,10 @@ class AppState
     @value = value
   end
 
+  def self.load(storage)
+    new(storage.load(:app_state).to_sym)
+  end
+
   attr_reader :value
 
   def value=(new_state)

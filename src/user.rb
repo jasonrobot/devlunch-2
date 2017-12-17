@@ -8,7 +8,12 @@ class User
     @pick = pick
   end
 
+  def self.load(storage, id)
+    from_json storage.load :user, id
+  end
+
   # TODO: I want both these json parsing methods to work the same
+  # FIXME: make private
   def self.from_json(json)
     json = JSON.parse json
     new(json['name'],
@@ -18,6 +23,7 @@ class User
         json['pick'])
   end
 
+  # FIXME: make private
   def self.from_json_array(json)
     json = JSON.parse json
     json.map do |user_json|
