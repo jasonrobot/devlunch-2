@@ -31,17 +31,36 @@ post '/createAccount' do
 end
 
 post '/signup' do
-  return if params['user_id'].nil?
+  # verify req'd params present, load them
+  user_id = params['user_id']
+  return if user_id.nil?
   operation = params['operation']
+  return if operation.nil?
+  # TODO: handle this check better
   return unless %w[out joining voting].include? operation
 
   store = RedisStorage.new
-  user_id = params['user_id']
   user = User.load store, user_id
   state = AppState.load store
-  UsersController.new(user, state).signup operation.to_sym
+  UsersController.new(user, state).signup(operation.to_sym)
   store.store user
   # return 200 ok?
+end
+
+# TODO: what format should options come in?
+post '/edit' do
+  # load and verify params
+  user_id = params['user_id']
+  return if user_id.nil?
+  # options = params['options']
+  # TODO: make options into a hash
+  fields = %w[name nickname pick]
+  options = params.select { |k, _| fields.include? k }
+
+  store = RedisStorage.new
+  user = User.load store, user_id
+  state = AppState.load store
+  UsersController.new(user, state).update(options)
 end
 
 get '/users' do

@@ -52,7 +52,11 @@ class RedisStorage
     case type
     when :user
       # use index 1 so as to not include the cursor
-      @redis.scan(0, @match => 'user:*')[1].map { |k| JSON.parse(@redis.get(k)) }.to_json
+      result = @redis.scan(0, match: 'user:*')[1].map do |k|
+        puts "getting from key #{k}: #{@redis.get(k)}"
+        JSON.parse(@redis.get(k))
+      end
+      result.to_json
     end
   end
 
