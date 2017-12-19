@@ -30,14 +30,17 @@ class UsersController
   def update(options)
     # should check the formatting of options here, keys need to be symbols
     # take no action in :results_final state
+    puts "updating user #{@user.id} with #{options}"
     case @state.value
     when :waiting, :voting
       # all changes allowed
-      @user.update options
+      @user.update! options
     when :results_pending
       # only pick can be changed
       options.select! { |k, _| k == :pick }
-      @user.update options
+      @user.update! options
     end
+    puts @user.name
+    @user
   end
 end

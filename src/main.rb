@@ -47,20 +47,22 @@ post '/signup' do
   # return 200 ok?
 end
 
-# TODO: what format should options come in?
 post '/edit' do
   # load and verify params
   user_id = params['user_id']
   return if user_id.nil?
   # options = params['options']
-  # TODO: make options into a hash
   fields = %w[name nickname pick]
-  options = params.select { |k, _| fields.include? k }
+  options = {}
+  params.select { |k, _| fields.include? k }.each_key do |k|
+    options[k.to_sym] = params[k]
+  end
 
   store = RedisStorage.new
   user = User.load store, user_id
   state = AppState.load store
-  UsersController.new(user, state).update(options)
+  user = UsersController.new(user, state).update(options)
+  store.store user
 end
 
 get '/users' do
