@@ -1,57 +1,64 @@
 # myapp.rb
 require 'sinatra'
 require 'json'
-require './src/array_storage.rb'
 require './src/redis_storage.rb'
 require './src/user.rb'
 require './src/users_controller.rb'
+require './src/session.rb'
+
+def has_all_params?(params, *keys)
+  keys.all? { |k| params.key? k }
+end
 
 get '/' do
   'Hello world!'
 end
 
-post '/login' do
-  uname = params['uname']
-  # need to load user by name
+def login(uid)
   storage = RedisStorage.new
-  user = User.load storage, uname
+  # TODO: need to load user by name
+  user = User.load storage, uid
   session = Session.new user.id
   storage.store session
-  session.id
+  puts "sess id: #{session.session_id}"
+  session.session_id.to_s
+end
+
+post '/login' do
+  login params['user_id']
 end
 
 post '/createAccount' do
   return 'missing name' if params['name'].nil?
-  puts 'create account'
   storage = RedisStorage.new
   name = params['name']
   user = User.new name
   storage.store user
-  user.id
+  login user.id
 end
 
 post '/signup' do
   # verify req'd params present, load them
-  user_id = params['user_id']
-  return if user_id.nil?
+  return unless has_all_params?(params, 'session_id', 'operation')
+  session_id = params['session_id']
   operation = params['operation']
-  return if operation.nil?
   # TODO: handle this check better
-  return unless %w[out joining voting].include? operation
+  return unless %w[out joining voting].include?(operation)
 
   store = RedisStorage.new
-  user = User.load store, user_id
+  session = Session.load store, session_id
+  user = User.load store, session.user_id
   state = AppState.load store
   UsersController.new(user, state).signup(operation.to_sym)
   store.store user
-  # return 200 ok?
 end
 
 post '/edit' do
+  return unless has_all_params?(params, 'session_id')
   # load and verify params
-  user_id = params['user_id']
-  return if user_id.nil?
-  # options = params['options']
+  session_id = params['session_id']
+
+  # filter out only the options we want
   fields = %w[name nickname pick]
   options = {}
   params.select { |k, _| fields.include? k }.each_key do |k|
@@ -59,10 +66,12 @@ post '/edit' do
   end
 
   store = RedisStorage.new
-  user = User.load store, user_id
+  session = Session.load store, session_id
+  user = User.load store, session.user_id
   state = AppState.load store
   user = UsersController.new(user, state).update(options)
   store.store user
+  user.to_json
 end
 
 get '/users' do

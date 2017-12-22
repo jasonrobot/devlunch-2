@@ -1,3 +1,5 @@
+require 'json'
+
 # User object
 class User
   def initialize(name, id = nil, status = :out, nickname = '', pick = '')

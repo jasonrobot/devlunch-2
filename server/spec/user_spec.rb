@@ -20,20 +20,20 @@ RSpec.describe User do
     end
 
     it 'should allow data to be set from a hash' do
-      @user.update(name: 'foo', nickname: 'bar', pick: 'baz')
+      @user.update!(name: 'foo', nickname: 'bar', pick: 'baz')
       expect(@user.name).to eq 'foo'
       expect(@user.nickname).to eq 'bar'
       expect(@user.pick).to eq 'baz'
     end
 
     it 'should ignore invalid hash keys' do
-      @user.update(blah: 'test')
+      @user.update!(blah: 'test')
       # what expectations should be set here? Maybe that there's no change?
     end
 
     it 'should not allow status changes' do
       @user.status = :out
-      @user.update(status: :joining)
+      @user.update!(status: :joining)
       expect(@user.status).to eq :out
     end
   end
