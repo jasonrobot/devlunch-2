@@ -1,0 +1,5 @@
+gem 'curb'
+gem 'json'
+gem 'random'
+gem 'redis'
+gem 'sinatra'

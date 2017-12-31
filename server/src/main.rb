@@ -6,7 +6,7 @@ require './src/user.rb'
 require './src/users_controller.rb'
 require './src/session.rb'
 
-def has_all_params?(params, *keys)
+def all_params?(params, *keys)
   keys.all? { |k| params.key? k }
 end
 
@@ -39,7 +39,7 @@ end
 
 post '/signup' do
   # verify req'd params present, load them
-  return unless has_all_params?(params, 'session_id', 'operation')
+  return unless all_params?(params, 'session_id', 'operation')
   session_id = params['session_id']
   operation = params['operation']
   # TODO: handle this check better
@@ -54,7 +54,7 @@ post '/signup' do
 end
 
 post '/edit' do
-  return unless has_all_params?(params, 'session_id')
+  return unless all_params?(params, 'session_id')
   # load and verify params
   session_id = params['session_id']
 
