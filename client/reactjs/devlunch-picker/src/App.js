@@ -8,9 +8,9 @@ import './App.css';
 class Header extends Component {
   render() {
     return (
-      <div class="header">
+      <div className="header">
         {/* should say different things depending on app state */}
-        <div class="header_label">Time left: </div>
+        <div className="header_label">Time left: </div>
         <Timer />
       </div>
     );
@@ -24,7 +24,7 @@ class Header extends Component {
 class Timer extends Component {
   render() {
     return (
-      <div class="timer">
+      <div className="timer">
         {/* TODO get data from app state or something */}
         unknown
       </div>
@@ -37,15 +37,45 @@ class Timer extends Component {
  * - callbacks to update state
  */
 class SignupForm extends Component {
+  constructor(props) {
+    super(props)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleChange = this.handleChange.bind(this)  
+  }
+
+  handleSubmit(event) {
+    event.preventDefault()
+    alert("submitting as " + this.state.action + "\n" +
+          "with data {" + this.state.nickname + ": " + this.state.pick + "}")
+    /*TODO: something like:
+     * POST(session, data)
+     */
+  }
+
+  handleChange(event) {
+    let key = event.target.name,
+        value = event.target.value;
+    
+    this.setState(
+      {[key]: value}
+    );
+  }
+
+  setAction(which) {
+    this.setState({action: which})
+  }
+
   render() {
     return (
-      <div class="signup-form">
-        <input class="signup-form_nickname" placeholder="nickname"/>
-        <input class="signup-form_pick" placeholder="pick"/>
-        <button class="signup-form_minus">-</button>
-        <button class="signup-form_tilde">~</button>
-        <button class="signup-form_plus">+</button>
-      </div>
+      <form className="signup-form" onSubmit={this.handleSubmit}>
+        <input name="nickname" className="signup-form_nickname" placeholder="nickname"
+         onChange={this.handleChange} />
+        <input name="pick" className="signup-form_pick" placeholder="pick"
+         onChange={this.handleChange}/>
+        <button type="submit" className="signup-form_minus" onClick={() => this.setAction(NOT_COMING)}>-</button>
+        <button type="submit" className="signup-form_tilde" onClick={() => this.setAction(JOINING)}>~</button>
+        <button type="submit" className="signup-form_plus" onClick={() => this.setAction(VOTING)}>+</button>        
+      </form>
     )
   }
 }
@@ -57,11 +87,11 @@ class SignupForm extends Component {
 class UserList extends Component {
   render() {
     return (
-      <div class="user-list">
+      <div className="user-list">
         {this.props.what}
         <ul>
           {this.props.users.map( (user) => {
-            return <li class="user-list_user">{user.nickname}</li>
+            return <li className="user-list_user">{user.nickname}</li>
           })}
         </ul>
       </div>
@@ -69,9 +99,9 @@ class UserList extends Component {
   }
 }
 
-const NOT_COMING = 0,
-      JOINING = 1,
-      VOTING = 2;
+const NOT_COMING = 0
+const JOINING = 1
+const VOTING = 2
 
 function makeUser(nickname, status) {
   return {
@@ -97,6 +127,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      currentUser: "tester",
       allUsers: getSampleUsers()
     }
   }
@@ -113,7 +144,7 @@ class App extends Component {
         <Header />
         <SignupForm />
         <UserList what="voting" users={voting} />
-        <UserList what="joining" users={joining}/>
+        <UserList what="joining" users={joining} />
       </div>
     );
   }

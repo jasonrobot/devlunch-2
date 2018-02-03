@@ -1,0 +1,20 @@
+# this just describes the layout hierarchy of components in the app
+App:
+  Header:
+    - label: "Time left"
+    - Timer
+  Login:
+    - LoginForm
+    - input: uname
+  SignupForm:
+    - input: nickname
+    - input: pick
+    - button: minus
+    - button: tilde
+    - button: plus
+  UserList:
+    - label: "Plusoned"
+    - list: plus
+  UserList:
+    - label: "Just coming"
+    - list: tilde
