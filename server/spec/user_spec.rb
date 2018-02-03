@@ -10,8 +10,9 @@ RSpec.describe User do
     it 'should not allow invalid statuses' do
       @user = User.new 'test', 1
       @user.status = :foobar
-      expect(@user.status).not_to eq 4
+      expect(@user.status).not_to eq :foobar
     end
+
   end
 
   describe 'update' do
@@ -29,6 +30,7 @@ RSpec.describe User do
     it 'should ignore invalid hash keys' do
       @user.update!(blah: 'test')
       # what expectations should be set here? Maybe that there's no change?
+      expect(@user.blah).not_to eq 'test'
     end
 
     it 'should not allow status changes' do
@@ -40,7 +42,7 @@ RSpec.describe User do
 
   context 'being loaded' do
     before :example do
-      @user = User.new 'test', 1, :voting, 't', 'food';
+      @user = User.new('test', 1, :voting, 't', 'food')
     end
 
     it 'should load from json' do

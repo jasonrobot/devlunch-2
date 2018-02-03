@@ -39,8 +39,8 @@ end
 
 post '/signup' do
   # verify req'd params present, load them
-  return unless all_params?(params, 'session_id', 'operation')
-  session_id = params['session_id']
+  # return unless all_params?(params, 'operation')
+  session_id = request.env['session']
   operation = params['operation']
   # TODO: handle this check better
   return unless %w[out joining voting].include?(operation)
@@ -54,9 +54,9 @@ post '/signup' do
 end
 
 post '/edit' do
-  return unless all_params?(params, 'session_id')
+  # return unless all_params?(request.env, 'session_id')
   # load and verify params
-  session_id = params['session_id']
+  session_id = request.env['session']
 
   # filter out only the options we want
   fields = %w[name nickname pick]
@@ -74,6 +74,17 @@ post '/edit' do
   user.to_json
 end
 
+get '/me' do
+  session_id = request.env['session']
+  puts request.env.keys
+  store = RedisStorage.new
+
+  puts 
+  session = Session.load store, session_id
+  user = User.load store, session.user_id
+  user.to_json
+end
+
 get '/users' do
   store = RedisStorage.new
   # this is ok here, because we don't need them parsed
@@ -87,4 +98,34 @@ get '/users/*' do |option|
   store = RedisStorage.new
   users = User.load_all store
   users.select { |u| u.status == option.to_sym }.to_json
+end
+
+# this will return the status of the app and some related info
+# waiting: how long till next vote
+# voting: who is coming (+1/join), how long till pick
+# results_*: who won, their pick, who's going (+1/join)
+get '/status' do
+  response = {}
+
+  store = RedisStorage.new
+  state = AppState.load store
+
+  response[:status] = state
+
+  case state
+  when :waiting
+    response[:timeleft] = 'cant calculate times yet'
+  when :voting
+    all_users = User.load_all store
+    response[:voting] = all_users.select { |u| u.status == :voting }
+    response[:joining] = all_users.select { |u| u.status == :joining }
+    response[:timeleft] = 'cant calculate times yet'
+  when :results_pending, :results_final
+    all_users = User.load_all store
+    response[:voting] = all_users.select { |u| u.status == :voting }
+    response[:joining] = all_users.select { |u| u.status == :joining }
+    response[:winner] = all_users.select { |u| u.status == :winner }
+  end
+
+  response.to_json
 end

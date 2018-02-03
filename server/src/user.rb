@@ -53,7 +53,7 @@ class User
   attr_reader :status
 
   def status=(new_status)
-    if %i[out voting joining].include? new_status
+    if %i[out voting joining winner].include? new_status
       @status = new_status
     else
       puts "invalid status #{new_status}"
