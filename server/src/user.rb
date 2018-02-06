@@ -60,6 +60,7 @@ class User
     end
   end
 
+  # FIXME would be nicer to have status as an int
   def to_json(options = {})
     { 'name'     => @name,
       'id'       => @id,

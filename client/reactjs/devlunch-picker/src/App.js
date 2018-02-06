@@ -139,42 +139,56 @@ function getSampleUsers() {
   ];
 }
 
+function getRealUsers() {
+  console.log("fetching")
+  return fetch('http://localhost:4567/users', {
+    method: 'GET',
+  }).then( response => { //success
+    return response.json()
+  }, error => { //failure
+    console.log("there was an error")
+    console.log(error)
+  }).then( function(text) {
+    console.log('should have something here')
+    console.log(text)
+    return text
+  })  
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
+
+    // let usersPromise = getRealUsers()
+    // usersPromise.then(users => {
+    //   this.state = {
+    //     currentUser: "tester",
+    //     allUsers: getSampleUsers(),
+    //     // allUsers: users
+    //     realUsers: getRealUsers().then(it => {console.log('ARGH')})
+    //   }
+    // })
+    
     this.state = {
       currentUser: "tester",
-      allUsers: getSampleUsers()
+      allUsers: getSampleUsers(),
+      // allUsers: users
+      realUsers: []
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     //fetch all our data here!
-    //{"name":"tester","id":4,"status":"out","nickname":"tester","pick":""}
-    // var xmlHttp = new XMLHttpRequest();
-    // xmlHttp.open( "GET", "localhost:4567/users", true ); // false for synchronous request
-    // xmlHttp.send( null );
-    // console.log(xmlHttp.responseText)
-    
-    console.log("fetching")
-    fetch('http://localhost:4567/users', {
-      method: 'GET',
-    }).then( response => { //success
-      return response.text()
-    }, error => { //failure
-      console.log("there was an error")
-      console.log(error)
-    }).then( function(text) {
-      console.log('should have something here')
-      console.log(text)
-      console.log(typeof text)
-      console.log(text === '')
+    getRealUsers().then(users => {
+      this.setState({
+        allUsers: users
+      })
     })
   }
 
   render() {
     let voting = this.state.allUsers.filter( (user) => {
-      return user.status === VOTING
+      return user.status === 'out'
     });
     let joining = this.state.allUsers.filter( (user) => {
       return user.status === JOINING
