@@ -5,6 +5,11 @@ require './src/redis_storage.rb'
 require './src/user.rb'
 require './src/users_controller.rb'
 require './src/session.rb'
+require 'sinatra/cross_origin'
+
+configure do
+  enable :cross_origin
+end
 
 def all_params?(params, *keys)
   keys.all? { |k| params.key? k }
