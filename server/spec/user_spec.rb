@@ -12,7 +12,6 @@ RSpec.describe User do
       @user.status = :foobar
       expect(@user.status).not_to eq :foobar
     end
-
   end
 
   describe 'update' do

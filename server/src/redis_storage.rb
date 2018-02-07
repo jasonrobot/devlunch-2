@@ -1,6 +1,6 @@
 require 'redis'
-require './src/user.rb'
-require './src/app_state.rb'
+require_relative 'user.rb'
+require_relative 'app_state.rb'
 
 # Storage backend using redis
 # everything in here needs to return json. It's up to the app to reify

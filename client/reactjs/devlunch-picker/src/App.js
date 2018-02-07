@@ -77,18 +77,22 @@ class SignupForm extends Component {
 
   render() {
     return (
-      <form className="signup-form" onSubmit={this.handleSubmit}>
-        {
-          Object.keys(this.state.formParams).map( key => {
-            return (
-              <input name={key} className={'signup-form_' + key} placeholder={key} onChange={this.handleChange} />
-            )
-          })
-        }
-        <button type="submit" className="signup-form_minus" onClick={() => this.setAction(NOT_COMING)}>-</button>
-        <button type="submit" className="signup-form_tilde" onClick={() => this.setAction(JOINING)}>~</button>
-        <button type="submit" className="signup-form_plus" onClick={() => this.setAction(VOTING)}>+</button>   
-      </form>
+      <div className="signup-form">
+        <form className="signup-form_form" onSubmit={this.handleSubmit}>
+          {
+            Object.keys(this.state.formParams).map( key => {
+              return (
+                <input name={key} className={'signup-form_form_' + key} placeholder={key} onChange={this.handleChange} />
+              )
+            })
+          }
+          <div className="signup-form_buttons">
+            <button type="submit" className="signup-form_buttons_minus" onClick={() => this.setAction(NOT_COMING)}>-</button>
+            <button type="submit" className="signup-form_buttons_tilde" onClick={() => this.setAction(JOINING)}>~</button>
+            <button type="submit" className="signup-form_buttons_plus" onClick={() => this.setAction(VOTING)}>+</button>   
+          </div>
+        </form>
+      </div>
     )
   }
 }
@@ -99,10 +103,21 @@ class SignupForm extends Component {
  */
 class UserList extends Component {
   render() {
+    // If there are no users, dont make a list
+    if (this.props.users.length === 0) {
+      return (
+        <div classname="user-list_empty">
+        </div>
+      )
+    }
+
+    let what = this.props.what.charAt(0).toUpperCase() + this.props.what.slice(1)
     return (
       <div className="user-list">
-        {this.props.what}
-        <ul>
+        <div className="user-list_header">
+          {what}
+        </div>
+        <ul className="user-list_list">
           {this.props.users.map( (user) => {
             return <li className="user-list_user">{user.nickname}</li>
           })}
@@ -117,13 +132,25 @@ const JOINING = 1
 const VOTING = 2
 
 class User {
-  constructor (name, id, status, nickname, pick) {
+  constructor (name, nickname, id, status = NOT_COMING, pick = "") {
     this.name = name
-    this.id = id
-    this.status = status || NOT_COMING
     this.nickname = nickname || name
-    this.pick = pick || ""
+    this.id = id
+    this.status = status
+    this.pick = pick
   }
+}
+
+function statusFromString (status) {
+  if (status === 'voting') {
+    return VOTING
+  }
+  else if (status === 'joining') {
+    return JOINING
+  }
+  else {
+    return NOT_COMING
+  }  
 }
 
 function getSampleUsers() {
@@ -139,8 +166,8 @@ function getSampleUsers() {
   ];
 }
 
+// TODO FIXME all this data needs to come in in the right format
 function getRealUsers() {
-  console.log("fetching")
   return fetch('http://localhost:4567/users', {
     method: 'GET',
   }).then( response => { //success
@@ -148,10 +175,12 @@ function getRealUsers() {
   }, error => { //failure
     console.log("there was an error")
     console.log(error)
-  }).then( function(text) {
-    console.log('should have something here')
-    console.log(text)
-    return text
+  }).then( function(data) {
+    return data.map(user => {
+      Object.setPrototypeOf(user, User.prototype)
+      user.status = statusFromString(user.status)
+      return user
+    })
   })  
 }
 
@@ -159,21 +188,9 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    // let usersPromise = getRealUsers()
-    // usersPromise.then(users => {
-    //   this.state = {
-    //     currentUser: "tester",
-    //     allUsers: getSampleUsers(),
-    //     // allUsers: users
-    //     realUsers: getRealUsers().then(it => {console.log('ARGH')})
-    //   }
-    // })
-    
     this.state = {
       currentUser: "tester",
-      allUsers: getSampleUsers(),
-      // allUsers: users
-      realUsers: []
+      allUsers: [],
     }
   }
 
@@ -188,7 +205,7 @@ class App extends Component {
 
   render() {
     let voting = this.state.allUsers.filter( (user) => {
-      return user.status === 'out'
+      return user.status === VOTING
     });
     let joining = this.state.allUsers.filter( (user) => {
       return user.status === JOINING

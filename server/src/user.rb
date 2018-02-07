@@ -10,6 +10,8 @@ class User
     @pick = pick
   end
 
+  VALID_STATUSES = %i[out voting joining winner].freeze
+
   def self.load(storage, id)
     from_json storage.load :user, id
   end
@@ -53,7 +55,7 @@ class User
   attr_reader :status
 
   def status=(new_status)
-    if %i[out voting joining winner].include? new_status
+    if VALID_STATUSES.include? new_status
       @status = new_status
     else
       puts "invalid status #{new_status}"
