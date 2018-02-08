@@ -17,6 +17,18 @@ class Header extends Component {
   }
 }
 
+class LoginForm extends Component {
+  render() {
+    return(
+      <div classname="login-form">
+        <form>
+          <input placeholder="username"/>
+        </form>
+      </div>
+    )
+  }
+}
+
 /**
  * data-deps:
  * - app-state: time of next state change
@@ -41,10 +53,11 @@ class SignupForm extends Component {
     super(props)
 
     //form data to submit
-    this.state = 
-    { formParams:
-        { "nickname": ""
-        , "pick": ""
+    this.state = {
+      formParams:
+        {
+          "nickname": "",
+          "pick": "",
         }
     }
     
@@ -54,9 +67,11 @@ class SignupForm extends Component {
 
   handleSubmit(event) {
     event.preventDefault()
-    alert("submitting as " + this.state.action + "with data\n" +
-          "this.state.nickname: " + this.state.nickname + "\n" +
-          "this.state.pick: " + this.state.pick)
+    alert(
+      "submitting as " + this.state.action + " with data\n" +
+      "this.state.nickname: " + this.state.nickname + "\n" +
+      "this.state.pick: " + this.state.pick
+    )
     /*TODO: something like:
      * POST(session, data)
      */
@@ -95,7 +110,7 @@ class SignupForm extends Component {
       </div>
     )
   }
-}
+} /* SignupForm */
 
 /**
  * data-deps:
@@ -139,21 +154,21 @@ class User {
     this.status = status
     this.pick = pick
   }
+
+  static statusFromString (status) {
+    if (status === 'voting') {
+      return VOTING
+    }
+    else if (status === 'joining') {
+      return JOINING
+    }
+    else {
+      return NOT_COMING
+    }
+  }
 }
 
-function statusFromString (status) {
-  if (status === 'voting') {
-    return VOTING
-  }
-  else if (status === 'joining') {
-    return JOINING
-  }
-  else {
-    return NOT_COMING
-  }  
-}
-
-function getSampleUsers() {
+function getFakeUsers() {
   return [
     new User("foo", 0, VOTING, "", ""),
     new User("bar", 0, VOTING, "", ""),
@@ -166,24 +181,6 @@ function getSampleUsers() {
   ];
 }
 
-// TODO FIXME all this data needs to come in in the right format
-function getRealUsers() {
-  return fetch('http://localhost:4567/users', {
-    method: 'GET',
-  }).then( response => { //success
-    return response.json()
-  }, error => { //failure
-    console.log("there was an error")
-    console.log(error)
-  }).then( function(data) {
-    return data.map(user => {
-      Object.setPrototypeOf(user, User.prototype)
-      user.status = statusFromString(user.status)
-      return user
-    })
-  })  
-}
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -194,9 +191,29 @@ class App extends Component {
     }
   }
 
+  // TODO FIXME all this data needs to come in in the right format
+  static getRealUsers() {
+    return fetch('http://localhost:4567/users', {
+      method: 'GET',
+    }).then( response => { //success
+      return response.json()
+    }, error => { //failure
+      console.log("there was an error")
+      console.log(error)
+    }).then( data => { //success
+      return data.map(user => {
+        Object.setPrototypeOf(user, User.prototype)
+        user.status = User.statusFromString(user.status)
+        return user
+      }, error => { //failure
+        return getFakeUsers();
+      })
+    })
+  }
+
   componentDidMount() {
     //fetch all our data here!
-    getRealUsers().then(users => {
+    App.getRealUsers().then(users => {
       this.setState({
         allUsers: users
       })
@@ -212,6 +229,7 @@ class App extends Component {
     });
     return (
       <div className="App">
+        <LoginForm />
         <Header />
         <SignupForm />
         <UserList what="voting" users={voting} />

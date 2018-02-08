@@ -29,3 +29,13 @@ ul {
   text-align: start;
   list-style-position: inside;
 }
+
+.login-form {
+  position: absolute;
+  z-index: 1;
+  width: 50%;
+  margin: auto 0;
+}
+
+.login-form_form {
+}
