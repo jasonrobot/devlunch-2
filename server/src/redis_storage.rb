@@ -60,7 +60,7 @@ class RedisStorage
       # use index 1 so as to not include the cursor
       # result = @redis.scan(0, match: 'user:*')[1].map do |k|
       result = @redis.keys('user:*').map do |k|
-        puts "getting from key #{k}: #{@redis.get(k)}"
+        # puts "getting from key #{k}: #{@redis.get(k)}"
         JSON.parse(@redis.get(k))
       end
       result.to_json
@@ -74,9 +74,9 @@ class RedisStorage
   end
 
   def load_session(id)
-    puts "getting id #{id}"
+    # puts "getting id #{id}"
     result = @redis.get "session:#{id}"
-    puts "got from redis #{result}"
+    # puts "got from redis #{result}"
     result
   end
 

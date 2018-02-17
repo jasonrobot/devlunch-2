@@ -30,7 +30,7 @@ ul {
   list-style-position: inside;
 }
 
-.login-form {
+/* .login-form {
   position: absolute;
   z-index: 1;
   width: 50%;
@@ -38,4 +38,4 @@ ul {
 }
 
 .login-form_form {
-}
+} */

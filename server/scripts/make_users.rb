@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # make_users.rb
 # make a bunch of dummy users for testing
 #$LOAD_PATH = "../src"
@@ -31,10 +32,6 @@ usernames.each do |uname|
   u = User.new uname
   u.pick = picks.sample
   u.status = User::VALID_STATUSES.reject { |x| x == :winner }.sample
-
-  # uri = URI('http://localhost:4567/')
-  # Net::HTTP.start(uri.host, uri.port) do |http|
-  # end
 
   storage.store u
 

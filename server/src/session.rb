@@ -1,4 +1,6 @@
 # This is the model for the session.
+# Basically, it just maps a session id onto a user id
+# FIXME sinatra has its own session management code, please use it
 class Session
   def initialize(user_id, session_id = nil)
     @user_id = user_id

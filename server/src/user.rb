@@ -23,6 +23,7 @@ class User
   # TODO: I want both these json parsing methods to work the same
   # FIXME: make private
   def self.from_json(json)
+    puts json
     json = JSON.parse json
     new(json['name'],
         json['id'],

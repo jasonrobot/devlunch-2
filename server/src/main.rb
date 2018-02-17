@@ -7,9 +7,20 @@ require './src/users_controller.rb'
 require './src/session.rb'
 require 'sinatra/cross_origin'
 
-configure do
-  enable :cross_origin
+# before do
+#   headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+#   headers['Access-Control-Allow-Origin'] = 'http://localhost:3000,'
+#   headers['Access-Control-Allow-Headers'] = 'accept, authorization, origin'
+#   headers['Access-Control-Allow-Credentials'] = 'true'
+# end
+
+before do
+  cross_origin
 end
+
+# configure do
+#   enable :cross_origin
+# end
 
 def all_params?(params, *keys)
   keys.all? { |k| params.key? k }
@@ -22,15 +33,19 @@ end
 def login(uid)
   storage = RedisStorage.new
   # TODO: need to load user by name
+
   user = User.load storage, uid
   session = Session.new user.id
   storage.store session
   puts "sess id: #{session.session_id}"
   session.session_id.to_s
+  # "please just take some data"
 end
 
 post '/login' do
-  login params['user_id']
+  puts 'we did at least hit login'
+
+  login params['username']
 end
 
 post '/createAccount' do
@@ -84,7 +99,7 @@ get '/me' do
   puts request.env.keys
   store = RedisStorage.new
 
-  puts 
+  puts
   session = Session.load store, session_id
   user = User.load store, session.user_id
   user.to_json
@@ -115,9 +130,9 @@ get '/status' do
   store = RedisStorage.new
   state = AppState.load store
 
-  response[:status] = state
+  response[:status] = state.value
 
-  case state
+  case state.value
   when :waiting
     response[:timeleft] = 'cant calculate times yet'
   when :voting

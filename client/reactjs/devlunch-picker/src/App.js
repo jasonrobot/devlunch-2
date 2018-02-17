@@ -2,6 +2,20 @@ import React, { Component } from 'react';
 import './App.css';
 
 /**
+ * @param {*} event
+ * @implicit-param event.target.name must corresppond to property name in this.state
+ *                 and is taken from the name="" of the target element
+ */
+function genericFormChangeHandler(event) {
+  const key = event.target.name,
+        value = event.target.value;
+
+  this.setState(
+    {[key]: value}
+  );
+}
+
+/**
  * data-deps:
  * - app-state
  */
@@ -18,11 +32,54 @@ class Header extends Component {
 }
 
 class LoginForm extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {}
+
+    this.handleChange = genericFormChangeHandler.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+  }
+
+  handleSubmit(event) {
+    event.preventDefault()
+    //dunno what to do here
+
+    let data = new FormData();
+    data.append('username', this.state.username)
+
+    const reqData = {
+      method: 'POST',
+      headers: {},
+      body: data
+    };
+
+    //be good handle errors
+    let fetchSuccess = response => {
+      // debugger
+      return response.text()
+    }
+    let fetchError = error => {console.error('fetch error')}
+    let decodeSuccess = data => {
+      alert("holy-o-fuck, we've got data boys!\n" + data)
+      // TODO do stuff with session id here
+      // this.props.returnSessionId(data);
+    }
+    let decodeError = error => {console.error('decode error')}
+    let response = (
+      fetch('http://localhost:4567/login', reqData)
+      .then(fetchSuccess, fetchError)
+      .then(decodeSuccess, decodeError)
+    );
+    // alert('logging in as user: ' + this.state.username)
+  }
+
   render() {
     return(
-      <div classname="login-form">
-        <form>
-          <input placeholder="username"/>
+      <div className="login-form">
+        <form onSubmit={this.handleSubmit}>
+          <input name="username" placeholder="user id" onChange={this.handleChange}/>
+          <button>Login</button>
         </form>
       </div>
     )
@@ -60,9 +117,9 @@ class SignupForm extends Component {
           "pick": "",
         }
     }
-    
+
     this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleChange = this.handleChange.bind(this)
+    this.handleChange = genericFormChangeHandler.bind(this)
   }
 
   handleSubmit(event) {
@@ -77,14 +134,13 @@ class SignupForm extends Component {
      */
   }
 
-  handleChange(event) {
-    let key = event.target.name,
-        value = event.target.value;
-    
-    this.setState(
-      {[key]: value}
-    );
-  }
+  // handleChange(event) {
+  //   let key = event.target.name,
+  //       value = event.target.value;
+  //   this.setState(
+  //     {[key]: value}
+  //   );
+  // }
 
   setAction(which) {
     this.setState({action: which})
@@ -97,14 +153,14 @@ class SignupForm extends Component {
           {
             Object.keys(this.state.formParams).map( key => {
               return (
-                <input name={key} className={'signup-form_form_' + key} placeholder={key} onChange={this.handleChange} />
+                <input name={key} key={key} className={'signup-form_form_' + key} placeholder={key} onChange={this.handleChange} />
               )
             })
           }
           <div className="signup-form_buttons">
             <button type="submit" className="signup-form_buttons_minus" onClick={() => this.setAction(NOT_COMING)}>-</button>
             <button type="submit" className="signup-form_buttons_tilde" onClick={() => this.setAction(JOINING)}>~</button>
-            <button type="submit" className="signup-form_buttons_plus" onClick={() => this.setAction(VOTING)}>+</button>   
+            <button type="submit" className="signup-form_buttons_plus" onClick={() => this.setAction(VOTING)}>+</button>
           </div>
         </form>
       </div>
@@ -121,12 +177,12 @@ class UserList extends Component {
     // If there are no users, dont make a list
     if (this.props.users.length === 0) {
       return (
-        <div classname="user-list_empty">
+        <div className="user-list_empty">
         </div>
       )
     }
 
-    let what = this.props.what.charAt(0).toUpperCase() + this.props.what.slice(1)
+    const what = this.props.what.charAt(0).toUpperCase() + this.props.what.slice(1)
     return (
       <div className="user-list">
         <div className="user-list_header">
@@ -134,7 +190,7 @@ class UserList extends Component {
         </div>
         <ul className="user-list_list">
           {this.props.users.map( (user) => {
-            return <li className="user-list_user">{user.nickname}</li>
+            return <li key={user.nickname} className="user-list_user">{user.nickname}</li>
           })}
         </ul>
       </div>
@@ -170,6 +226,7 @@ class User {
 
 function getFakeUsers() {
   return [
+    new User("USING FAKE USERS", 0, VOTING, "", ""),
     new User("foo", 0, VOTING, "", ""),
     new User("bar", 0, VOTING, "", ""),
     new User("baz", 0, VOTING, "", ""),
@@ -191,24 +248,48 @@ class App extends Component {
     }
   }
 
+
+
   // TODO FIXME all this data needs to come in in the right format
   static getRealUsers() {
-    return fetch('http://localhost:4567/users', {
+
+    let options = {
       method: 'GET',
-    }).then( response => { //success
+    }
+
+    // success of request, now get the data out
+    let fetchSuccess = response => {
       return response.json()
-    }, error => { //failure
-      console.log("there was an error")
+    }
+
+    // failure of request
+    let fetchError = error => {
+      console.log("there was an error in requesting data from the server. Is it running, and is your cross-origin shit sorted?")
       console.log(error)
-    }).then( data => { //success
+    }
+
+    //success of from json
+    let decodeSuccess = data => {
       return data.map(user => {
         Object.setPrototypeOf(user, User.prototype)
         user.status = User.statusFromString(user.status)
         return user
-      }, error => { //failure
-        return getFakeUsers();
       })
-    })
+    }
+
+    let decodeError = error => {
+      console.error("You've probably got some invalid JSON coming back from the server. Write better unit test, nerd.")
+      return getFakeUsers();
+    }
+
+    // let response = fetch('http://localhost:4567/users', options);
+    // let result = response.then(fetchSuccess, fetchError);
+    // return result.then(decodeSuccess, decodeError)
+    return (
+      fetch('http://localhost:4567/users', options)
+      .then(fetchSuccess, fetchError)
+      .then(decodeSuccess, decodeError)
+    );
   }
 
   componentDidMount() {
@@ -221,10 +302,10 @@ class App extends Component {
   }
 
   render() {
-    let voting = this.state.allUsers.filter( (user) => {
+    const voting = this.state.allUsers.filter( (user) => {
       return user.status === VOTING
     });
-    let joining = this.state.allUsers.filter( (user) => {
+    const joining = this.state.allUsers.filter( (user) => {
       return user.status === JOINING
     });
     return (
