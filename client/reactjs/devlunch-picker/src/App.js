@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
+import Header from './Header.js';
+// import * as SignupForm from './SignupForm.js';
+import Timer from './Timer.js';
 
 /**
  * @param {*} event
@@ -13,22 +16,6 @@ function genericFormChangeHandler(event) {
   this.setState(
     {[key]: value}
   );
-}
-
-/**
- * data-deps:
- * - app-state
- */
-class Header extends Component {
-  render() {
-    return (
-      <div className="header">
-        {/* should say different things depending on app state */}
-        <div className="header_label">Time left: </div>
-        <Timer />
-      </div>
-    );
-  }
 }
 
 class LoginForm extends Component {
@@ -56,7 +43,6 @@ class LoginForm extends Component {
 
     //be good handle errors
     let fetchSuccess = response => {
-      // debugger
       return response.text()
     }
     let fetchError = error => {console.error('fetch error')}
@@ -64,40 +50,36 @@ class LoginForm extends Component {
       alert("holy-o-fuck, we've got data boys!\n" + data)
       // TODO do stuff with session id here
       // this.props.returnSessionId(data);
+      this.state.sessionId = data;
     }
     let decodeError = error => {console.error('decode error')}
     let response = (
       fetch('http://localhost:4567/login', reqData)
       .then(fetchSuccess, fetchError)
-      .then(decodeSuccess, decodeError)
+      .then(decodeSuccess.bind(this), decodeError)
     );
     // alert('logging in as user: ' + this.state.username)
   }
 
   render() {
-    return(
-      <div className="login-form">
-        <form onSubmit={this.handleSubmit}>
-          <input name="username" placeholder="user id" onChange={this.handleChange}/>
-          <button>Login</button>
-        </form>
-      </div>
-    )
-  }
-}
+    if (!this.state.sessionId) {
+      return(
+        <div className="login-form">
+          <form onSubmit={this.handleSubmit}>
+            <input name="username" placeholder="user id" onChange={this.handleChange}/>
+            <button>Login</button>
+          </form>
+        </div>
+      )
+    }
+    else {
+      return(
+        <div className="login-info">
+          <div>You are logged in as {this.state.sessionId}</div>
+        </div>
+      )
+    }
 
-/**
- * data-deps:
- * - app-state: time of next state change
- */
-class Timer extends Component {
-  render() {
-    return (
-      <div className="timer">
-        {/* TODO get data from app state or something */}
-        unknown
-      </div>
-    )
   }
 }
 
@@ -243,12 +225,11 @@ class App extends Component {
     super(props);
 
     this.state = {
+      sessionId: undefined,
       currentUser: "tester",
       allUsers: [],
     }
   }
-
-
 
   // TODO FIXME all this data needs to come in in the right format
   static getRealUsers() {
