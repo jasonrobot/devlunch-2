@@ -1,154 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 import Header from './Header.js';
-// import * as SignupForm from './SignupForm.js';
+import LoginForm from './LoginForm.js'
+import SignupForm from './SignupForm.js';
 import Timer from './Timer.js';
-
-/**
- * @param {*} event
- * @implicit-param event.target.name must corresppond to property name in this.state
- *                 and is taken from the name="" of the target element
- */
-function genericFormChangeHandler(event) {
-  const key = event.target.name,
-        value = event.target.value;
-
-  this.setState(
-    {[key]: value}
-  );
-}
-
-class LoginForm extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {}
-
-    this.handleChange = genericFormChangeHandler.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-  }
-
-  handleSubmit(event) {
-    event.preventDefault()
-    //dunno what to do here
-
-    let data = new FormData();
-    data.append('username', this.state.username)
-
-    const reqData = {
-      method: 'POST',
-      headers: {},
-      body: data
-    };
-
-    //be good handle errors
-    let fetchSuccess = response => {
-      return response.text()
-    }
-    let fetchError = error => {console.error('fetch error')}
-    let decodeSuccess = data => {
-      alert("holy-o-fuck, we've got data boys!\n" + data)
-      // TODO do stuff with session id here
-      // this.props.returnSessionId(data);
-      this.state.sessionId = data;
-    }
-    let decodeError = error => {console.error('decode error')}
-    let response = (
-      fetch('http://localhost:4567/login', reqData)
-      .then(fetchSuccess, fetchError)
-      .then(decodeSuccess.bind(this), decodeError)
-    );
-    // alert('logging in as user: ' + this.state.username)
-  }
-
-  render() {
-    if (!this.state.sessionId) {
-      return(
-        <div className="login-form">
-          <form onSubmit={this.handleSubmit}>
-            <input name="username" placeholder="user id" onChange={this.handleChange}/>
-            <button>Login</button>
-          </form>
-        </div>
-      )
-    }
-    else {
-      return(
-        <div className="login-info">
-          <div>You are logged in as {this.state.sessionId}</div>
-        </div>
-      )
-    }
-
-  }
-}
-
-/**
- * data-deps:
- * - callbacks to update state
- */
-class SignupForm extends Component {
-  constructor(props) {
-    super(props)
-
-    //form data to submit
-    this.state = {
-      formParams:
-        {
-          "nickname": "",
-          "pick": "",
-        }
-    }
-
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleChange = genericFormChangeHandler.bind(this)
-  }
-
-  handleSubmit(event) {
-    event.preventDefault()
-    alert(
-      "submitting as " + this.state.action + " with data\n" +
-      "this.state.nickname: " + this.state.nickname + "\n" +
-      "this.state.pick: " + this.state.pick
-    )
-    /*TODO: something like:
-     * POST(session, data)
-     */
-  }
-
-  // handleChange(event) {
-  //   let key = event.target.name,
-  //       value = event.target.value;
-  //   this.setState(
-  //     {[key]: value}
-  //   );
-  // }
-
-  setAction(which) {
-    this.setState({action: which})
-  }
-
-  render() {
-    return (
-      <div className="signup-form">
-        <form className="signup-form_form" onSubmit={this.handleSubmit}>
-          {
-            Object.keys(this.state.formParams).map( key => {
-              return (
-                <input name={key} key={key} className={'signup-form_form_' + key} placeholder={key} onChange={this.handleChange} />
-              )
-            })
-          }
-          <div className="signup-form_buttons">
-            <button type="submit" className="signup-form_buttons_minus" onClick={() => this.setAction(NOT_COMING)}>-</button>
-            <button type="submit" className="signup-form_buttons_tilde" onClick={() => this.setAction(JOINING)}>~</button>
-            <button type="submit" className="signup-form_buttons_plus" onClick={() => this.setAction(VOTING)}>+</button>
-          </div>
-        </form>
-      </div>
-    )
-  }
-} /* SignupForm */
 
 /**
  * data-deps:
@@ -179,10 +34,6 @@ class UserList extends Component {
     )
   }
 }
-
-const NOT_COMING = 0
-const JOINING = 1
-const VOTING = 2
 
 class User {
   constructor (name, nickname, id, status = NOT_COMING, pick = "") {

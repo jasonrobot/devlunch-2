@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Timer from './Timer.js';
 
 /**
+ * Header of the page, contains info about the current app state
  */
 class Header extends Component {
     render() {
